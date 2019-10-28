@@ -24,7 +24,9 @@ int rtnl_stuck_sysctl_handler(struct ctl_table *table, int write,
 	if (write) {
 		pr_info("I will sleep for %d seconds", rtnl_stuck_msleep_seconds);
 		rtnl_lock();
-		msleep(1000 * rtnl_stuck_msleep_seconds);
+		set_current_state(TASK_INTERRUPTIBLE);
+		schedule_timeout(rtnl_stuck_msleep_seconds * HZ);
+		/* msleep(1000 * rtnl_stuck_msleep_seconds); */
 		rtnl_unlock();
 	}
 
